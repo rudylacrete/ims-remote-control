@@ -15,3 +15,4 @@ Valve_s* addValve(char*, int);
 char* printValve(Valve_s*);
 bool allValveSet(void);
 void setValveSetCompleteCallback(AllValveSetCallback);
+void freeValve(void);

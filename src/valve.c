@@ -46,3 +46,7 @@ void setValveSetCompleteCallback(AllValveSetCallback _cb) {
     cb(valves);
   }
 }
+
+void freeValve() {
+  free(valves);
+}
