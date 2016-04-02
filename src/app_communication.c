@@ -19,11 +19,10 @@ static void inbox_received_callback(DictionaryIterator *iter, void *context) {
   }
   if(valveNumber) {
     int vNumber = (int)valveNumber->value->int32;
+    allocValveNumber(vNumber);
     APP_LOG(APP_LOG_LEVEL_INFO, "Valve number: %d", vNumber);
   }
   if(valveName && valveGuid) {
-    static char name[80];
-    snprintf(name, sizeof(name), "%s", valveName->value->cstring);
     Valve_s* v = addValve(valveName->value->cstring, valveGuid->value->int32);
     APP_LOG(APP_LOG_LEVEL_INFO, "Name -> %s | guid -> %d", v->name, v->guid);
   }

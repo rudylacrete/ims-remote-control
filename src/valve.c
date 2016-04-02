@@ -10,7 +10,7 @@ static bool pendingCbCall = false;
 
 void allocValveNumber(int number) {
   _allocValveNumber = number;
-  valves = (Valve_s*)malloc(sizeof(Valve_s) * number);
+  valves = malloc(sizeof(Valve_s) * number);
 }
 
 int getValveNumber() {
@@ -22,14 +22,15 @@ bool allValveSet() {
 }
 
 Valve_s* addValve(char* name, int guid) {
-  Valve_s* valve = valves + valveNumber++;
+  Valve_s* valve = valves + (valveNumber++);
   memcpy(valve->name, name, sizeof(valve->name));
   valve->guid = guid;
+  
   // check wheither cb is set and have to be called
-  if(allValveSet() && cb)
-    cb(valves);
-  else
-    pendingCbCall = true;
+  if(allValveSet()) {
+    if(cb) cb(valves);
+    else pendingCbCall = true;
+  }
   return valve;
 }
 

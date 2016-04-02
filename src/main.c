@@ -1,8 +1,15 @@
 #include <pebble.h>
 #include "app_communication.h"
+#include "valve.h"
 
 static Window *s_window;
 static TextLayer *s_text_layer;
+
+static void allValveSetCallback(Valve_s* valves) {
+  static char text[100];
+  snprintf(text, sizeof(text), "Fetch done (%d valves)", getValveNumber());
+  text_layer_set_text(s_text_layer, text);
+}
 
 static void init(void) {
 	// Create a window and get information about the window
@@ -12,7 +19,7 @@ static void init(void) {
 	
   // Create a text layer and set the text
 	s_text_layer = text_layer_create(bounds);
-	text_layer_set_text(s_text_layer, "Hi, I'm a Pebble!");
+	text_layer_set_text(s_text_layer, "Fetching valves ...");
   
   // Set the font and text alignment
 	text_layer_set_font(s_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
@@ -30,6 +37,7 @@ static void init(void) {
 	// App Logging!
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Just pushed a window!");
   
+  setValveSetCompleteCallback(allValveSetCallback);
   initAppCom();
 }
 
