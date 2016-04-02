@@ -1,0 +1,28 @@
+{
+    "appKeys": {
+        "AppKeyJSReady": 0,
+        "ValveGuid": 3,
+        "ValveName": 2,
+        "ValveNumber": 1
+    },
+    "capabilities": [
+        ""
+    ],
+    "companyName": "rudylacrete@gmail.com",
+    "enableMultiJS": true,
+    "longName": "DSI - IMS remote control",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "DSI - IMS remote control",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "afde88cc-9f50-4ff8-b329-bf274d8145bb",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
