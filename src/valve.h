@@ -12,7 +12,7 @@ typedef enum {
 } ValveCmdCode;
 
 // definition of callback to call when valve are all set
-typedef void(* AllValveSetCallback)(Valve_s *valves);
+typedef void(* AllValveSetCallback)(Valve_s*);
 
 void allocValveNumber(int);
 int getValveNumber(void);

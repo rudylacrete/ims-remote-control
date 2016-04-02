@@ -7,17 +7,35 @@
 static SimpleMenuLayer *s_simple_menu_layer;
 static SimpleMenuSection s_menu_sections[NUM_MENU_SECTIONS];
 static SimpleMenuItem *s_first_menu_items;
-
+static ActionMenuLevel *s_action_menu;
 
 static Window *s_window;
 static TextLayer *s_text_layer;
 
+static Valve_s* selectedValve;
+
+static void action_menu_callback(ActionMenu *action_menu, const ActionMenuItem *action, void *context) {
+  ValveCmdCode i = (ValveCmdCode)action_menu_item_get_action_data(action);
+  APP_LOG(APP_LOG_LEVEL_INFO, "Action menu triggered: %d", i);
+  sendCmdRequest(selectedValve->guid, i);
+}
+
+static void initActionMenu() {
+  s_action_menu = action_menu_level_create(16);
+  action_menu_level_add_action(s_action_menu, "Open", action_menu_callback, (void*)CmdOpen);
+  action_menu_level_add_action(s_action_menu, "Close", action_menu_callback, (void*)CmdClose);
+}
+
 static void menu_select_callback(int index, void *ctx) {
   Valve_s* v = getValveByIndex(index);
-  SimpleMenuItem* i = &s_first_menu_items[index];
-  i->subtitle = "Openning ....";
-  sendCmdRequest(v->guid, CmdOpen);
-  layer_mark_dirty(simple_menu_layer_get_layer(s_simple_menu_layer));
+  //SimpleMenuItem* i = &s_first_menu_items[index];
+  //i->subtitle = "Openning ....";
+  //layer_mark_dirty(simple_menu_layer_get_layer(s_simple_menu_layer));
+  selectedValve = v;
+  ActionMenuConfig config = (ActionMenuConfig){
+    .root_level = s_action_menu
+  };
+  action_menu_open(&config);
 }
 
 static void allValveSetCallback(Valve_s* valves) {
@@ -45,7 +63,8 @@ static void allValveSetCallback(Valve_s* valves) {
   GRect bounds = layer_get_frame(window_layer);
 
   s_simple_menu_layer = simple_menu_layer_create(bounds, s_window, s_menu_sections, NUM_MENU_SECTIONS, NULL);
-
+  
+  initActionMenu();
   layer_add_child(window_layer, simple_menu_layer_get_layer(s_simple_menu_layer));
 }
 
@@ -73,6 +92,7 @@ static void main_window_load(Window *window) {
 static void main_window_unload(Window *window) {
   text_layer_destroy(s_text_layer);
   simple_menu_layer_destroy(s_simple_menu_layer);
+  action_menu_hierarchy_destroy(s_action_menu, NULL, NULL);
 }
 
 static void init(void) {
