@@ -1,3 +1,27 @@
+var WebServiceConnector = function() {
+  this.baseUri = "http://scooterlabs.com/echo.json";
+};
+  
+WebServiceConnector.prototype._makeRequest = function(path, method, parameters) {
+  var request = new XMLHttpRequest();
+  request.onreadystatechange = function() {
+    console.log(':::::::', request.readyState);
+  	if (request.readyState == 4 && (request.status == 200 || request.status === 0)) {
+  		console.log("OK", request.responseText);
+  	}
+  };
+  // Send the request
+  request.open(method, this.baseUri + path);
+  request.setRequestHeader('Content-Type', 'application/json');
+  request.send();
+};
+
+WebServiceConnector.prototype.openValve = function(guid) {
+    this._makeRequest("", "GET", {});
+};
+
+var webServiceConnector = new WebServiceConnector();
+
 Pebble.addEventListener('ready', function(){
   console.log("Pebble JS ready !!!");
 
@@ -25,3 +49,15 @@ Pebble.addEventListener('ready', function(){
     console.error("Failed to send valve count");
   });
 });
+
+Pebble.addEventListener('appmessage', function(e) {
+  console.log("Incoming message ....");
+  var dict = e.payload;
+  if(typeof dict.ValveCmdRequest != 'undefined')
+    handleValveCmdRequest(dict.ValveGuid, dict.ValveCmdRequest);
+});
+
+function handleValveCmdRequest(guid, cmd) {
+  console.log(".....", guid, cmd);
+  webServiceConnector.openValve(guid);
+}

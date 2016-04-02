@@ -17,7 +17,7 @@ int getValveNumber() {
   return valveNumber;
 }
 
-bool allValveSet() {
+bool isAllValveSet() {
   return valveNumber == _allocValveNumber;
 }
 
@@ -27,11 +27,17 @@ Valve_s* addValve(char* name, int guid) {
   valve->guid = guid;
   
   // check wheither cb is set and have to be called
-  if(allValveSet()) {
+  if(isAllValveSet()) {
     if(cb) cb(valves);
     else pendingCbCall = true;
   }
   return valve;
+}
+
+Valve_s* getValveByIndex(int index) {
+  if(index >= valveNumber)
+    return NULL;
+  return valves + index;
 }
 
 char* printValve(Valve_s* valve) {

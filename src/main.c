@@ -3,7 +3,6 @@
 #include "valve.h"
 
 #define NUM_MENU_SECTIONS 1
-#define NUM_FIRST_MENU_ITEMS 1
 
 static SimpleMenuLayer *s_simple_menu_layer;
 static SimpleMenuSection s_menu_sections[NUM_MENU_SECTIONS];
@@ -12,6 +11,14 @@ static SimpleMenuItem *s_first_menu_items;
 
 static Window *s_window;
 static TextLayer *s_text_layer;
+
+static void menu_select_callback(int index, void *ctx) {
+  Valve_s* v = getValveByIndex(index);
+  SimpleMenuItem* i = &s_first_menu_items[index];
+  i->subtitle = "Openning ....";
+  sendCmdRequest(v->guid, CmdOpen);
+  layer_mark_dirty(simple_menu_layer_get_layer(s_simple_menu_layer));
+}
 
 static void allValveSetCallback(Valve_s* valves) {
   static char text[100];
@@ -24,7 +31,8 @@ static void allValveSetCallback(Valve_s* valves) {
     snprintf(guid_str, 20, "GUID %d", valves[i].guid);
     s_first_menu_items[i] = (SimpleMenuItem) {
       .title = valves[i].name,
-      .subtitle = guid_str
+      .subtitle = guid_str,
+      .callback = menu_select_callback,
     };
   }
 

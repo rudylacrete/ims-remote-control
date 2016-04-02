@@ -1,5 +1,4 @@
 #include "app_communication.h"
-#include "valve.h"
 
 static bool s_js_ready;
 
@@ -38,6 +37,25 @@ static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResul
 
 static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
   APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
+}
+
+void sendCmdRequest(int guid, ValveCmdCode code) {
+  DictionaryIterator *out_iter;
+  AppMessageResult result = app_message_outbox_begin(&out_iter);
+  if(result == APP_MSG_OK) {
+    // Construct the message
+    int _code = (int)code;
+    dict_write_int(out_iter, ValveGuid, &guid, sizeof(int), true);
+    dict_write_int(out_iter, ValveCmdRequest, &_code, sizeof(int), true);
+    result = app_message_outbox_send();
+    // Check the result
+    if(result != APP_MSG_OK) {
+      APP_LOG(APP_LOG_LEVEL_ERROR, "Error sending the outbox: %d", (int)result);
+    }
+  } else {
+    // The outbox cannot be used right now
+    APP_LOG(APP_LOG_LEVEL_ERROR, "Error preparing the outbox: %d", (int)result);
+  }
 }
 
 void initAppCom() {

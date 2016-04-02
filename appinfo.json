@@ -1,6 +1,7 @@
 {
     "appKeys": {
         "AppKeyJSReady": 0,
+        "ValveCmdRequest": 4,
         "ValveGuid": 3,
         "ValveName": 2,
         "ValveNumber": 1
