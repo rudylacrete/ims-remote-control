@@ -7,7 +7,7 @@ WebServiceConnector.prototype._makeRequest = function(path, method, parameters) 
   request.onreadystatechange = function() {
     console.log(':::::::', request.readyState);
   	if (request.readyState == 4 && (request.status == 200 || request.status === 0)) {
-  		console.log("OK", request.responseText);
+  		console.log("OK ..." + request.responseText);
   	}
   };
   // Send the request
@@ -58,6 +58,6 @@ Pebble.addEventListener('appmessage', function(e) {
 });
 
 function handleValveCmdRequest(guid, cmd) {
-  console.log(".....", guid, cmd);
+  console.log("....." + guid + " " + cmd);
   webServiceConnector.openValve(guid);
 }
