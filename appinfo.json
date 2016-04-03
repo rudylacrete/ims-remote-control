@@ -7,7 +7,7 @@
         "ValveNumber": 1
     },
     "capabilities": [
-        ""
+        "configurable"
     ],
     "companyName": "rudylacrete@gmail.com",
     "enableMultiJS": true,
