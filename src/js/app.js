@@ -141,8 +141,10 @@ Pebble.addEventListener('ready', function(){
 
   // Update s_js_ready on watch
   Pebble.sendAppMessage({'AppKeyJSReady': 1});
-  var valves = [{name: 'test', guid: 1}, {name: 'test2', guid: 2}];
-  
+});
+
+function configureValves(valves) {
+
   function sendValve(index) {
     if(typeof index == 'undefined') index = 0;
     if(index == valves.length) {
@@ -156,13 +158,15 @@ Pebble.addEventListener('ready', function(){
       console.error("Failed to send valve", valve);
     });
   }
+  
   Pebble.sendAppMessage({'ValveNumber': valves.length}, function() {
     console.log("Valve number sent, begin to push valve informations ....");
     sendValve();
   }, function() {
     console.error("Failed to send valve count");
   });
-});
+  
+}
 
 Pebble.addEventListener('appmessage', function(e) {
   console.log("Incoming message ....");
@@ -175,3 +179,16 @@ function handleValveCmdRequest(guid, cmd) {
   console.log("....." + guid + " " + cmd);
   webServiceConnector.openValve(guid);
 }
+
+
+Pebble.addEventListener('showConfiguration', function() {
+  var url = 'http://adccdb24.ngrok.io/';
+  Pebble.openURL(url);
+});
+
+Pebble.addEventListener('webviewclosed', function(e) {
+  // Decode the user's preferences
+  var configData = JSON.parse(decodeURIComponent(e.response));
+  console.log(JSON.stringify(configData));
+  configureValves(configData);
+});
