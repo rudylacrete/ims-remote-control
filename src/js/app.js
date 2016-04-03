@@ -39,7 +39,6 @@ function encode64(input) {
 
 var CLIENT_ID = "test";
 var CLIENT_SECRET = "test";
-//var TOKEN_URL = "https://localhost:3002/oauth/token";
 var TOKEN_URL = "http://scooterlabs.com/echo.json";
 
 function _generateBasicAuthHeaderValue(username, password) {
@@ -61,14 +60,21 @@ WebServiceConnector.prototype._makeRequest = function(method, options, callback)
   var request = new XMLHttpRequest();
   var baseUri = options.baseUri || this.baseUri;
   request.onreadystatechange = function() {
-  	if (request.readyState == 4 && (request.status == 200 || request.status === 0)) {
-  		console.log("OK ..." + request.responseText);
-      try{
-        var json = JSON.parse(request.responseText);
-        callback && callback(null, json);
+    if (request.readyState == 4) {
+      if (request.status == 200 || request.status === 0) {
+    		console.log("OK ..." + request.responseText);
+        console.log(request.status, request.statusText);
+        try{
+          var json = JSON.parse(request.responseText);
+          callback && callback(null, json);
+        }
+        catch(e) {
+          callback && callback(null, request.responseText);
+        }
       }
-      catch(e) {
-        callback && callback(null, request.responseText);
+      else {
+        console.error(request.status, request.statusText);
+        callback(new Error(request.statusText));
       }
   	}
   };
@@ -102,15 +108,20 @@ WebServiceConnector.prototype.callApiEndpoint = function(path, method, body, cal
   var self = this;
   var options = {
     path: path,
-    body: body
+    body: body,
+    headers: {}
   };
+  function _sendRequest() {
+    options.headers.Authorization = this._token;
+    self._makeRequest(method, options, callback);
+  }
   if(this._token) {
-    this._makeRequest(method, options, callback);
+    _sendRequest();
   }
   else {
     this._getToken(function(error) {
       if(error) return callback(error);
-      self._makeRequest(method, options, callback);
+      _sendRequest();
     });
   }
 };
